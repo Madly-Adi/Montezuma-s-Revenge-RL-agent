@@ -69,4 +69,47 @@ for s in range(n_states):
         R[s, a_idx] = r
 
 
+vi = mdptoolbox.mdp.ValueIteration(P, R, discount=gamma, epsilon=1e-6, max_iter=10000)
+vi.run()
+
+pi = mdptoolbox.mdp.PolicyIteration(P, R, discount=gamma, max_iter=10000)
+pi.run()
+
+# Extract results
+policy_vi = np.array(vi.policy)      # length S, action indices 0..A-1; -1 not used here
+V_vi = np.array(vi.V)
+policy_pi = np.array(pi.policy)
+V_pi = np.array(pi.V)
+
+# Helper visualization (arrow map)
+arrow_map = {0:'↑',1:'↓',2:'←',3:'→', -1:'·'}
+def policy_grid(policy, has_key_flag):
+    grid = [['' for _ in range(W)] for __ in range(H)]
+    for y in range(H):
+        for x in range(W):
+            s_idx = state_to_idx[((x,y), has_key_flag)]
+            grid[y][x] = arrow_map[int(policy[s_idx])]
+    return grid
+
+df_vi_no_key = pd.DataFrame(policy_grid(policy_vi, 0), index=[f'y={y}' for y in range(H)], columns=[f'x={x}' for x in range(W)])
+df_vi_with_key = pd.DataFrame(policy_grid(policy_vi, 1), index=[f'y={y}' for y in range(H)], columns=[f'x={x}' for x in range(W)])
+df_pi_no_key = pd.DataFrame(policy_grid(policy_pi, 0), index=[f'y={y}' for y in range(H)], columns=[f'x={x}' for x in range(W)])
+df_pi_with_key = pd.DataFrame(policy_grid(policy_pi, 1), index=[f'y={y}' for y in range(H)], columns=[f'x={x}' for x in range(W)])
+
+
+print("MDP summary: grid {}x{}, states={}, actions={}".format(W,H,n_states,n_actions))
+print(f"Key at {key_pos}, Treasure at {treasure_pos}. step={step_reward}, key={key_reward}, treasure={treasure_reward}")
+print("\nValue Iteration policy (no key):")
+print(df_vi_no_key)
+print("\nValue Iteration policy (with key):")
+print(df_vi_with_key)
+print("\nPolicy Iteration policy (no key):")
+print(df_pi_no_key)
+print("\nPolicy Iteration policy (with key):")
+print(df_pi_with_key)
+
+
+print("\nPolicy arrays (action indices: 0=U,1=D,2=L,3=R):")
+print("policy_vi:", policy_vi)
+print("policy_pi:", policy_pi)
 
