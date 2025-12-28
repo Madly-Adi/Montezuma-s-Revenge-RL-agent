@@ -1,7 +1,7 @@
 # Reinforcement Learning Course Project  
 ## Montezuma’s Revenge (Atari)
 
-**Authors :** Aditya Sharma and Sivaveerkrishna S.
+**Authors :** Aditya Sharma and Sivaveerakrishnan S
  
 
 ---
